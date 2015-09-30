@@ -1,0 +1,52 @@
+\section{Feature Selection}
+We saw in class that one can use a variety of regularization penalties in linear regression.
+
+$$\hat{w} = \arg \min_w  \quad \|Y - Xw\|_2^2 + \lambda \|w\|_p^p$$
+
+Consider the three cases, $p$ = 0, 1, and 2. We want to know what
+effect these different penalties have on estimates of $w$.
+
+Let's see this using a simple problem. 
+
+Use the following data (also provided in matlab format).  Assume the
+constant term in the regression is zero, and assume $\lambda=1$,
+except, of course, for question (1).  You don't need to write code
+that solves these problems in their full generality; instead, feel
+free to use matlab to do the main calculations, and then just do a
+primitive search over parameter space by plugging in a few different
+values. Matlab function fminsearch will be helpful. (\emph{Note:} If you are not familiar with function handles, please review the code from HW 2 or see Matlab documentation.)
+
+\begin{enumerate}
+\item If we assume that the response variable $y$ is distributed according to $y \sim N( w \cdot x, \sigma^2)$, then what is the MLE estimate $\hat{w}_{MLE}$ of $w$?
+\[
+\hat{w}_{MLE} = w
+\]
+since MLE minimizes bias
+\item Given $\lambda = 1$, what is $\hat{w}$ for $p=2$? 
+\item Given $\lambda = 1$, what is $\hat{w}$ for $p=1$? 
+\item Given $\lambda = 1$, what is $\hat{w}$ for $p=0$? Note that since L0 norm is not a "real" norm, the penalty expression is a little different:\\
+$$\hat{w} = \arg \min_w  \quad \|Y - Xw\|_2^2 + \lambda \|w\|_0$$
+Also for L0 norm, you have to solve all combinatorial cases separately where some certain components of $w$ are set to zero, then add L0 accordingly. There are 8 cases for $3$ unknown $w_i$.
+
+\item Write a paragraph describing the relation between the estimates of
+$w$ in the four cases, explaining why that makes sense given the
+different penalties.
+
+\item When $\lambda > 0$, we make a trade-off between minimizing the sum of squared errors and the magnitude of $\hat{w}$. In the following questions, we will explore this trade-off further. For the following, use the same data from data.mat.
+\begin{enumerate}
+\item For the MLE estimate of w (as in 4.1), write down the value of the ratio $$||\hat{w}_{MLE}||_2^2  \; / \; ||Y-X\hat{w}_{MLE}||_2^2.$$
+
+\item
+\begin{enumerate}
+	\item Suppose the assumptions of linear regression are satisfied. Let's say that with $N$ training samples (assume $N >> P$, where $P$ is the number of features), you compute $\hat{w}_{MLE}$. Then let's say you do the same with $2N$ training samples. How do you expect $||Y-X\hat{w}_{MLE}||_2^2$ to change when going from $N$ to $2N$ samples? When $N>>P$, does this sum of squared errors for linear regression directly depend on the number of training samples?
+
+	\item Likewise, if you double the number of training samples, how do you expect $||\hat{w}_{MLE}||_2^2$ to change? Does $||\hat{w}_{MLE}||_2^2$ for linear regression directly depend on the number of training samples in the large-N limit? 
+
+\end{enumerate}
+
+\item Using any method (e.g. trial and error, random search, etc.), find a value of $\lambda$ for which the estimate $\hat{w}$ satisfies $$0.8 < ||\hat{w}||_2^2 \; / \; ||\hat{w}_{MLE}||_2^2 < 0.9.$$ 
+
+\item Using any method (e.g. trial and error, random search, etc.), find a value of $\lambda$ for which the estimate $\hat{w}$ satisfies $$0.4 < ||\hat{w}||_2^2 \; / \; ||\hat{w}_{MLE}||_2^2 < 0.5.$$
+
+\end{enumerate}
+\end{enumerate}

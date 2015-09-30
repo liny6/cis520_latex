@@ -1,0 +1,39 @@
+\documentclass[english]{article}
+
+%% Packages pull in extra commands:
+%% http://en.wikibooks.org/wiki/LaTeX/Packages
+\usepackage[latin9]{inputenc}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{latexsym}
+\usepackage{xspace}
+
+% New commands serve as shorthand for frequently used command combinations.
+\newcommand{\ind}[1]{\mathbf{1}\left(#1\right)}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\E}{\mathbf{E}}
+\newcommand{\bw}{\mathbf{w}}
+\renewcommand{\Pr}{\mathbf{Pr}\xspace}
+\newcommand{\Bern}{\textsf{Bernoulli}\xspace}
+\newcommand{\XX}{\mathcal{X}}
+
+\title{CIS 520, Machine Learning, Fall 2015: Assignment 3}
+\author{Yu-Cheng Lin}
+
+\begin{document}
+\maketitle
+{\normalsize Collaborator: \\ 
+\\ \underline{ Type Collaborator Name Here        }
+
+\input{questions/linear_regression_and_loocv_template.tex}
+\input{questions/logistic_regression_vs_naive_bayes_template.tex}
+\input{questions/naive_bayes_with_repeated_x_template.tex}
+\input{questions/feature_selection_template.tex}
+
+\end{document}

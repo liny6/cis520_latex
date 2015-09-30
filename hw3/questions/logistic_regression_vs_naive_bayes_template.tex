@@ -1,0 +1,82 @@
+\section{Logistic regression and Naive Bayes }
+
+A common debate in machine learning has been over generative versus
+discriminative models for classification.  In this question we will
+explore this issue by considering Naive Bayes and logistic regression.
+
+\begin{enumerate}
+\item  For input $X$ and output $Y$, which of the
+  following is the {\bf objective function} optimized by (i) Naive
+  Bayes, and (ii) logistic regression?
+  \begin{enumerate}
+  \item $\Pr(Y) / \Pr(X)$
+  \item $\Pr(X) / \Pr(Y)$
+  \item $\Pr(Y \mid X)$  Logistic regression optimizes this function, which is discriminative
+  \item $\Pr(Y)$
+  \item $\Pr(X)$
+  \item $\Pr(Y) \Pr(X)$
+  \item $\Pr(X, Y)$  Naive Bayes optimizes this function, which is generative
+  \item None of the above (provide the correct formula in this case)
+  \end{enumerate}
+
+
+\item Recall from the suggested reading that ``the
+  discriminative analog of Naive Bayes is logistic regression.'' This
+  means that the parametric form of $P(Y \mid X)$ used by logistic
+  regression is implied by the assumptions of a Naive Bayes
+  classifier, for some specific class-conditional densities. In class
+  you will see how to prove this for a Gaussian Naive Bayes classifier
+  for continuous input values. Can you prove the same for binary
+  inputs? Assume $X_i$ and $Y$ are both binary. Assume that $X_i \mid
+  Y=j$ is $\Bern (\theta_{ij})$, where $j \in \{0,1\}$, and $Y$ is
+  $\Bern(\pi)$.
+\emph{Hint:} Start by using Bayes Rule and the assumptions of Naive Bayes to express the objective function for logistic regression in terms of the given quantities $\theta_{ij}$ and $\pi$.
+\\
+\\{\bf ANS: }
+Let's start with the probabilities
+\begin{align*}
+P(X_i, Y = j) =&\; \theta_{ij}\\
+P(Y = 1) =&\; \pi\\
+P(Y = 0) =&\; 1 - \pi
+\end{align*}
+The goal of logistic regression is to maximize the following target function
+\begin{align*}
+P(Y = 1 | X_{1, 2, 3 ..., n}) =&\; \frac{P(X_{1, 2, 3 ..., n} | Y = 1)P(Y=1)}{P(X_{1, 2, 3 ..., n})}\\
+ \text{marginalize to obtain} \\
+=&\; \frac{P(X_{1, 2, 3 ..., n} | Y = 1)P(Y=1)}{P(X_{1, 2, 3 ..., n}|Y=1)(Y=1)+P(X_{1, 2, 3 ..., n}|Y=0)(Y=0)}\\
+ =&\; \frac{1}{1+\frac{P(X_{1, 2, 3 ..., n}|Y=0)P(Y=0)}{P(X_{1, 2, 3 ..., n}|Y=1)P(Y=1)}}\\
+ =&\; \frac{1}{1 + \exp(\ln(\frac{P(Y=0)}{P(Y=1)}) + \ln(\frac{P(X_{1, 2, 3 ..., n}|Y=0)}{P(X_{1, 2, 3 ..., n}|Y=1}))}\\
+ =&\; \frac{1}{1 + \exp(\ln(\frac{1-\pi}{\pi}) + \ln(\frac{\prod_{i = 1}^n \theta_{i0}}{\prod_{i = 1}^n \theta_{i1}}))}\\
+ =&\; \frac{1}{1 + \exp(\ln(\frac{1-\pi}{\pi}) + \sum_{i=1}^n\ln(\frac{\theta_{i0}}{\theta_{i1}}))}
+\end{align*}
+
+from here, we can plug in the definition of Bernoulli distribution for $\theta_{ij}$
+
+\[
+\theta_{ij} = \theta_{ij}^{X_i}(1-\theta_{ij})^{1-X_i}
+\]
+We obtain
+\begin{align*}
+\frac{1}{1 + \exp(\ln(\frac{1-\pi}{\pi}) + \sum_{i=1}^n\ln(\frac{\theta_{i0}}{\theta_{i1}}))} 
+=&\; \frac{1}{1 + \exp(\ln(\frac{1-\pi}{\pi}) + \sum_{i=1}^n\ln(\frac{\theta_{i0}^{X_i}(1-\theta_{i0})^{1-X_i}}{\theta_{i1}^{X_i}(1-\theta_{i1})^{1-X_i}}))}
+\end{align*}
+
+the terms inside the natural log can be simplified as
+\begin{align*}
+\ln(\frac{\theta_{i0}^{X_i}(1-\theta_{i0})^{1-X_i}}{\theta_{i1}^{X_i}(1-\theta_{i1})^{1-X_i}}) 
+=&\;
+\ln((\frac{\theta_{i0}}{\theta_{i1}})^{X_i}(\frac{1-\theta_{i0}}{1-\theta_{i1}})^{1 - Xi})\\
+=&\;
+\frac{\frac{\theta_{i0}}{\theta_{i1}}}{\ln(\frac{\theta_{i0}}{\theta_{i1}})}X_i + \frac{\frac{1-\theta_{i0}}{1-\theta_{i1}}}{\ln(\frac{1-\theta_{i0}}{1-\theta_{i1}})}(1-X_i)
+\end{align*}
+Which is in form
+\[
+w_iX_i + K_i
+\]
+
+Ultimately, plugging this term back in the original equation, we will get the objective function of logistic regression
+\[
+\frac{1}{1 + \exp(w_0 + \sum_{i=1}^n w_iX_i)}
+\]
+
+\end{enumerate}

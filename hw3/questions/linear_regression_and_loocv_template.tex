@@ -1,0 +1,209 @@
+\section{Linear Regression and LOOCV}
+
+%\newcommand{\bw}{\mathbf{w}}
+
+In the last homework, you learned about using cross validation as a
+way to estimate the true error of a learning algorithm.  A solution
+that provides an almost unbiased estimate of this true error is
+\emph{Leave-One-Out Cross Validation} (LOOCV), but it can take a
+really long time to compute the LOOCV error.  In this problem, you
+will derive an algorithm for efficiently computing the LOOCV error for
+linear regression using the \emph{Hat Matrix}.
+\footnote{Unfortunately, such an efficient algorithm may not
+be easily found for other learning methods.}
+
+Assume that there are $n$ given training examples,
+$(X_1,Y_1),(X_2,Y_2),\dots,(X_n,Y_n)$, where each input data point
+$X_i$, has $m$ real-valued features.  The goal of regression is to
+learn to predict $Y$ from $X$.  The \emph{linear} regression model
+assumes that the output $Y$ is a weighted \emph{linear} combination of
+the input features with weights given by $\bw$, plus some Gaussian
+noise.
+
+We can write this in matrix form by stacking the data points as the
+rows of a matrix $X$ so that $x_{ij}$ is the $j$-th feature of the
+$i$-th data point.  Then writing $Y$, $\bw$ and $\epsilon$ as column
+vectors, we can express the linear regression model in matrix form as
+follows:
+
+\[
+Y=X\bw + \epsilon
+\]
+
+where:
+
+\[
+Y = \left[\begin{array}{c}
+Y_1 \\
+Y_2 \\
+\vdots \\
+Y_n
+\end{array}\right],
+X = \left[\begin{array}{cccc}
+x_{11} & x_{12} & \dots & x_{1m} \\
+x_{21} & x_{22} & \dots & x_{2m} \\
+\vdots & \vdots & \ddots & \vdots \\
+x_{n1} & x_{n2} & \dots & x_{nm} \\
+\end{array}\right],
+\bw = \left[\begin{array}{c}
+w_1 \\
+w_2 \\
+\vdots \\
+w_m
+\end{array}\right],
+\,\,\,\,\,\mbox{and}\,\,
+\epsilon = \left[\begin{array}{c}
+\epsilon_1 \\
+\epsilon_2 \\
+\vdots \\
+\epsilon_n
+\end{array}\right]
+\]
+Assume that $\epsilon_i$ is normally distributed with variance
+$\sigma^2$.  We saw in class that the maximum likelihood estimate of
+the model parameters $\bw$ (which also happens to minimize the sum of
+squared prediction errors) is given by the \emph{Normal equation}:
+\[
+\hat{\bw} = (X^TX)^{-1} X^TY
+\]
+
+\noindent Define $\hat{Y}$ to be the vector of predictions using
+$\hat{\bw}$ if we were to plug in the original training set $X$:
+\begin{eqnarray*}
+\hat{Y} &=& X\hat{\bw}  \\
+    &=& X(X^T X)^{-1} X^T Y \\
+    &=& H Y
+\end{eqnarray*}
+where we define $H=X(X^T X)^{-1} X^T$ ($H$ is often called the
+\emph{Hat Matrix}).
+
+\noindent As mentioned above, $\hat{\bw}$, also minimizes the sum of
+squared errors:
+\[
+\mbox{SSE} = \sum_{i=1}^{n} (Y_i-\hat{Y}_i)^2
+\]
+Now recall that the Leave-One-Out Cross Validation score is defined to
+be:
+\[
+\mbox{LOOCV} = \sum_{i=1}^n (Y_i - \hat{Y}_i^{(-i)})^2
+\]
+where $\hat{Y}^{(-i)}$ is the estimator of $Y$ after removing the
+$i$-th observation (i.e., it minimizes $\sum_{j\neq i} (Y_j -
+\hat{Y}_j^{(-i)})^2$). 
+
+\begin{enumerate}
+
+\item To begin with, we should consider when it is possible to compute $\hat{\bw}$ in this framework.
+	\begin{enumerate}
+	\item Suppose $m > n$. Is $\hat{\bw}$ well-defined? Why or why not?\\
+	\emph{Hint:} Recall that the rank of a matrix is equal to the number of linearly independent rows, which is also equal to the number of linearly independent columns. Use the fact that for two matrices $A$ and $B$ which can be multiplied to form the product $AB$, it must be the case that $\text{rank}(AB) \le \min \left( \text{rank}(A), \text{rank}(B) \right)$. Furthermore, recall that a square matrix is invertible if and only if it is full-rank.\\
+	\\
+	
+	{\bf Ans: }If $m>n$, $\hat{\bw}$ will not be well defined. This is because that if $m>n$, $X^TX^{-1}$ will have rank $n$ at most while it's a $m \times m$ matrix, and such matrix is not invertible because it's not full rank. \\
+	
+	\item Suppose $m \le n$. Give a condition on $X$ which guarantees that $\hat{\bw}$ will \textbf{not} be well-defined and explain why not. (Don't assume $X$ is a square matrix.)\\
+	\\
+	{\bf Ans: } If k columns in $X$ are redundant, $\hat{\bw}$ might not be well defined because $X^TX$ will have rank $n-k$. If $n-k < m$, $X^TX^{-1}$ will not be invertible. \\
+	
+	\end{enumerate}
+For the rest of question 1, assume $\hat{\bw}$ is well-defined.
+
+\item  What is the complexity of computing the LOOCV score
+  naively? (The naive algorithm is to loop through each point,
+  performing a regression on the $n-1$ remaining points at each
+  iteration.)\\
+  \\
+  {\bf Ans: } Computing LOOCV naively will require $O(n)$ complexity in the outer loop and $O(m^3)$ in the inner loop since I will end up inverting a m by m matrix. Overall, the naive approach should yield a computation complexity of $O(nm^3)$
+  \\
+
+  \emph{Hint}: The complexity of matrix inversion for a $k\times k$
+  matrix is $O(k^3)$.  (There are faster algorithms out there but for
+  simplicity we'll assume that we are using the naive $O(k^3)$
+  algorithm.)
+
+
+\item  Write $\hat{Y}_i$ in terms of the elements of $H$ and
+  $Y$.  You may find it useful to use shorthand such as $H_{ab}$ to
+  denote the entry in row $a$, column $b$ of $H$.
+  \\
+  \\{\bf Ans: }
+  \[\hat{Y}_i = \sum_{J=1}^{m}H_{ij}Y_j \]
+
+
+\item Show that $\hat{Y}^{(-i)}$ is also the estimator
+  which minimizes SSE for $Z$ where
+  \[
+  Z_j = \left\{\begin{array}{cc}
+  Y_j, & j\neq i \\
+  \hat{Y}_i^{(-i)}, & j=i \\
+  \end{array}\right.
+  \]
+
+  \emph{Hint}: Try to start by writing an expression for the SSE of
+  $Z$; it should look very similar to the definition of SSE for $Y$
+  that was given in the introduction section of this question.  Then,
+  manipulate terms until you can argue that substituting
+  $\hat{Y}^{(-i)}$ for $\hat{Z}$ would minimize this expression.
+  \\
+    \\
+    {\bf Ans: }
+    We first write the SSE for Z
+    \[SSE_Z =  \sum^n_{j = 1}(Z-\hat{Y}^{(-i)})^2\]
+    Now substitute Z
+  \[
+  SSE_Z = \left\{\begin{array}{cc}
+  \sum_{j=1}^n (Y_j - \delta_{ij}\hat{Y}_i^{(-i)})^2 & j \neq i \\
+  (\hat{Y}_i^{(-i)} - \hat{Y}_i^{(-i)})^2 & j = i \\
+  \end{array}\right.
+  \]    
+    As we can see, when $j = i$, the SSE is zero, otherwise it takes the same form as the SSE of Y. In conclusion, $\hat{Y}^{(-i)}$ for $\hat{Z}$ would minimize Z.
+
+
+\item   Write $\hat{Y}_i^{(-i)}$ in terms of $H$ and $Z$. By
+definition, $\hat{Y}_i^{(-i)} = Z_i$, but give an answer that includes both
+$H$ and $Z$.
+\\
+ {\bf Ans: }
+\[
+\hat{Y}_i^{(-i)} = \sum_{j=1}^m H{ij}Z_j
+\]
+\\
+\item  \label{it:diag}
+Show that $\hat{Y}_i - \hat{Y}_i^{(-i)} = H_{ii}Y_i - H_{ii}\hat{Y}_i^{(-i)}$,
+where $H_{ii}$ denotes the $i$-th element along the diagonal of $H$.\\
+ \emph{Hint}: Use the results from  part 2 and 4. Substitute $Z_i$ with $Y_i$ and $\hat{Y}_i^{-i}$ by using its definition in part 3.
+
+ {\bf Ans: }
+\begin{align*}
+	\hat{Y}_i - \hat{Y}_i^{(-i)} =&\; \sum_{J=1}^{m}H_{ij}Y_j - \sum_{j=1}^m 		H{ij}Z_j\\
+	=&\; \sum_{J=1}^{m}H_{ij}Y_j - (\sum_{j=1}^m H_{ij}Y_j - H_{ii}Y_i + H_{ii}\hat{Y}_i^{(-i)}\\
+	=&\; H_{ii}Y_i - H_{ii}\hat{Y}_i^{(-i)}
+\end{align*}
+
+
+
+\item 
+Show that
+\[
+LOOCV = \sum_{i=1}^{n}  \left(\frac{Y_i - \hat{Y}_i}{1-H_{ii}}\right)^2
+\]
+What is the algorithmic complexity of computing the LOOCV score using
+this formula?
+
+Note: We see from this formula that the diagonal elements of $H$ somehow
+indicate the impact that each particular observation has on the result
+of the regression.\\
+\\
+use the result from (6) and solve for $\hat{Y}_i^{(-i)}$:
+\begin{align*}
+\hat{Y}_i - \hat{Y}_i^{(-i)} =&\; H_{ii}Y_i - H_{ii}\hat{Y}_i^{(-i)}\\
+\hat{Y}_i - H{ii}Y_i =&\; (1-H_{ii})\hat{Y}_i^{(-i)}\\
+\hat{Y}_i^{(-i)}=&\; \frac{\hat{Y}_i-H_{ii}Y_i}{1-H_{ii}}
+\end{align*}
+plug this $\hat{Y}_i^{(-i)}$ in the LOOCV formula and do some algebra:
+\begin{align*}
+LOOCV =&\; \sum_{i=1}^{n}  \left(Y_i - \hat{Y}_i^{(-i)}\right)^2\\
+=&\; \sum_{i=1}^{n}  \left(Y_i - \frac{\hat{Y}_i-H_{ii}Y_i}{1-H_{ii}}\right)^2\\
+=&\; \sum_{i=1}^{n}  \left(\frac{Y_i - \hat{Y}_i}{1-H_{ii}}\right)^2
+\end{align*}
+\end{enumerate}
